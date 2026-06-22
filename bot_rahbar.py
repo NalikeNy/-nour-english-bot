@@ -25,7 +25,7 @@ from telegram.ext import (
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "8830833753:AAHQgjNEWR05uGHwdY3N8eJPMPu_S09uNYQ")
 
-CHANNEL_LINK = "https://t.me/NourEnglish"        # ссылка на твой канал
+CHANNEL_LINK = "https://t.me/Nour_English_Edu"        # ссылка на твой канал
 CHANNEL_NAME = "Nour English"
 TEACHER_USERNAME = "https://t.me/@NalikeNy"          # замени на свой username для связи
 
