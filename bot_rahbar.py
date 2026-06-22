@@ -27,7 +27,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN", "8830833753:AAHQgjNEWR05uGHwdY3N8eJPMPu_
 
 CHANNEL_LINK = "https://t.me/Nour_English_Edu"        # ссылка на твой канал
 CHANNEL_NAME = "Nour English"
-TEACHER_USERNAME = "https://t.me/@NalikeNy"          # замени на свой username для связи
+TEACHER_USERNAME = "https://t.me/NalikeNy"          # замени на свой username для связи
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -49,13 +49,7 @@ REGIONS = {
 # НАПРАВЛЕНИЯ ОБУЧЕНИЯ
 # ──────────────────────────────────────────────
 
-DIRECTIONS = {
-    "ege": "ЕГЭ / ОГЭ",
-    "ielts": "IELTS / TOEFL",
-    "relocate": "Английский для переезда",
-    "speaking": "Разговорный английский",
-    "scratch": "С нуля / для себя",
-}
+
 
 # ──────────────────────────────────────────────
 # ВОПРОСЫ ТЕСТА — 30 штук, по возрастанию сложности
@@ -131,7 +125,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_state[update.effective_user.id] = {}
 
     text = (
-        "Ассаляму алейкум. 🌿\n\n"
         "Я — *Рахбар*, наставник школы *Nour English*. Помогаю каждому найти "
         "свой путь к английскому языку — определяю уровень, подбираю программу "
         "под цель и передаю заявку преподавателю.\n\n"
@@ -168,7 +161,7 @@ async def region_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_main_menu(query_or_update, edit: bool = False):
     text = (
         "Чем могу помочь?\n\n"
-        "📜 *Узнать свой уровень* — испытание из 30 вопросов, итог по шкале CEFR (A1–C1)\n"
+        "📜 *Узнать свой уровень* — тест из 30 вопросов, итог по шкале CEFR (A1–C1)\n"
         "💰 *Цены и программы* — все направления и пакеты\n"
         "🤝 *Записаться на пробный* — свяжется лично преподаватель\n"
         "✍️ *Написать преподавателю* — если хочешь сразу в личку"
@@ -210,10 +203,8 @@ async def menu_router(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def show_test_intro(query):
     text = (
-        "📜 *Испытание уровня — 30 вопросов*\n\n"
-        "Если не уверен — выбирай ближайший вариант. Не возвращайся назад. "
-        "Займёт около 8–10 минут.\n\n"
-        "Отвечай по чутью, не подглядывай — мне нужен чистый срез.\n\n"
+        "📜 *Языковой Тест — 30 вопросов*\n\n"
+        "Не подглядывай — мне нужен чистый срез.\n\n"
         "В конце узнаешь свой уровень по шкале CEFR (A1–C1) и получишь "
         "рекомендацию по программе."
     )
@@ -235,7 +226,7 @@ async def begin_test(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_state[user_id]["q_index"] = 0
     user_state[user_id]["score"] = 0
 
-    await query.edit_message_text("Хорошо. Начинаем испытание. 🌿")
+    await query.edit_message_text("Начинаем тест. 🌿")
     await send_question(query.message.chat_id, user_id, context)
 
 
@@ -271,7 +262,7 @@ async def answer_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
     state = user_state.get(user_id)
 
     if state is None or "q_index" not in state:
-        await query.edit_message_text("Испытание сброшено. Напиши /start, чтобы начать заново.")
+        await query.edit_message_text("Тест сброшен. Напиши /start, чтобы начать заново.")
         return
 
     chosen_index = int(query.data.split(":")[1])
@@ -294,48 +285,24 @@ async def finish_test(chat_id: int, user_id: int, context: ContextTypes.DEFAULT_
     level_name, level_desc = get_level(score)
 
     text = (
-        "🎉 *Испытание завершено!*\n\n"
+        "🎉 *Тест завершён!*\n\n"
         f"📊 Твой уровень: *{level_name}*\n"
         f"{level_desc}\n\n"
-        "Теперь выбери направление, которое тебе ближе — и переходи на канал, "
-        "там тебя ждут материалы под твой уровень и цель."
+        "Напиши преподавателю — он подберёт программу под твой уровень и цель:"
     )
 
-    buttons = [
-        [InlineKeyboardButton(label, callback_data=f"dir:{key}")]
-        for key, label in DIRECTIONS.items()
-    ]
+    button = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("✍️ Написать преподавателю", url=TEACHER_USERNAME)]]
+    )
 
     await context.bot.send_message(
         chat_id=chat_id,
         text=text,
-        reply_markup=InlineKeyboardMarkup(buttons),
+        reply_markup=button,
         parse_mode="Markdown",
     )
 
-    user_state[user_id] = {"region": state.get("region")}
-
-
-async def direction_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-
-    direction_key = query.data.split(":")[1]
-    direction_label = DIRECTIONS.get(direction_key, "С нуля / для себя")
-
-    text = (
-        f"Хорошо, направление записано: *{direction_label}*. 🌿\n\n"
-        "Переходи на канал — там уроки и материалы под твою цель:\n\n"
-        f"👉 [{CHANNEL_NAME}]({CHANNEL_LINK})\n\n"
-        "BaarakAllaahu Feekum!"
-    )
-
-    button = InlineKeyboardMarkup(
-        [[InlineKeyboardButton(f"Перейти в {CHANNEL_NAME}", url=CHANNEL_LINK)]]
-    )
-
-    await query.edit_message_text(text, reply_markup=button, parse_mode="Markdown")
-    user_state.pop(query.from_user.id, None)
+    user_state.pop(user_id, None)
 
 
 # ──────────────────────────────────────────────
@@ -345,12 +312,7 @@ async def direction_chosen(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def show_prices(query):
     text = (
         "💰 *Цены и программы Nour English*\n\n"
-        "Заполни этот раздел своими актуальными пакетами и ценами — "
-        "например:\n\n"
-        "📌 ЕГЭ / ОГЭ — индивидуально / в группе\n"
-        "📌 IELTS / TOEFL — подготовка к экзамену\n"
-        "📌 Английский для переезда\n"
-        "📌 Разговорный клуб\n\n"
+        "Этот раздел скоро будет заполнен.\n\n"
         "Для уточнения цен и формата напиши преподавателю напрямую."
     )
 
