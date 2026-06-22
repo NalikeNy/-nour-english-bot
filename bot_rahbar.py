@@ -23,11 +23,11 @@ from telegram.ext import (
 # НАСТРОЙКИ — поменяй под себя
 # ──────────────────────────────────────────────
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "ВСТАВЬ_СЮДА_СВОЙ_ТОКЕН_ОТ_BOTFATHER")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8830833753:AAHQgjNEWR05uGHwdY3N8eJPMPu_S09uNYQ")
 
 CHANNEL_LINK = "https://t.me/NourEnglish"        # ссылка на твой канал
 CHANNEL_NAME = "Nour English"
-TEACHER_USERNAME = "https://t.me/Nazir"          # замени на свой username для связи
+TEACHER_USERNAME = "https://t.me/@NalikeNy"          # замени на свой username для связи
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
